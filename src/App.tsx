@@ -1,31 +1,31 @@
-import React, { useState } from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import { DragList } from "./components/DragList";
+import React, { useState } from 'react';
+import logo from './logo.svg';
+import './App.css';
+import { DragList } from './components/DragList';
 
 function App() {
-  const [searchUrl, setSearchUrl] = useState<string>("");
+  const [searchUrl, setSearchUrl] = useState<string>('');
   const updateSearch = (e: any) => {
     setSearchUrl(e.target.value);
   };
 
-  let user = "";
-  let repo = "";
+  let user = '';
+  let repo = '';
 
   const processSearchUrl = () => {
-    const result = searchUrl.split("/");
+    const result = searchUrl.split('/');
     user = result[3];
     repo = result[4];
     fetch(`https://api.github.com/repos/${user}/${repo}/issues`)
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+      .then(res => res.json())
+      .then(data => console.log(data));
   };
 
   return (
     <div className="container">
-      <input type="text" className="text" onChange={(e) => updateSearch(e)} />
+      <input type="text" className="text" onChange={e => updateSearch(e)} />
       <button onClick={processSearchUrl}>Load issues</button>
-      {/* <DragList /> */}
+      <DragList />
     </div>
   );
 }
