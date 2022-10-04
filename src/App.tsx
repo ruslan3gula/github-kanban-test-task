@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
+import { DragList } from "./components/DragList";
 
 function App() {
   const [searchUrl, setSearchUrl] = useState<string>("");
@@ -24,6 +25,7 @@ function App() {
     <div className="container">
       <input type="text" className="text" onChange={(e) => updateSearch(e)} />
       <button onClick={processSearchUrl}>Load issues</button>
+      {/* <DragList /> */}
     </div>
   );
 }
