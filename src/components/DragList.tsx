@@ -4,14 +4,14 @@ import './DragList.css';
 export const DragList = () => {
   const [boards, setBoards] = useState([
     { id: 1, title: 'OPEN', items: [{ id: 1, title: 'Мішок' }] },
-    { id: 2, title: 'IN PROGRESS', items: [{ id: 1, title: 'Свиня' }] },
+    { id: 2, title: 'IN PROGRESS', items: [{ id: 2, title: 'Свиня' }] },
     {
       id: 3,
       title: 'DONE',
       items: [
-        { id: 1, title: 'Кінь' },
-        { id: 2, title: 'Тісто' },
-        { id: 3, title: 'Паляниця' },
+        { id: 3, title: 'Кінь' },
+        { id: 4, title: 'Тісто' },
+        { id: 5, title: 'Паляниця' },
       ],
     },
   ]);
@@ -32,35 +32,36 @@ export const DragList = () => {
     title: string;
   } | null>(null);
 
-  const onDragOverHandler = (e: any, board: any, item: any) => {
-    console.log('debug > onDragOverHandler===', item);
-
+  const onDragOverHandler = (e: any, board: any) => {
     e.preventDefault();
-    if (e.target.className == 'item') {
+    if (e.target.className === 'item') {
       e.target.style.boxShadow = '0 4px 3px grey';
       e.target.style.border = 'solid 2px red';
+    } else if (e.target.className === 'board' && board !== currentBoard) {
+      e.target.style.border = '5px solid red';
     }
   };
 
   const onDragLeaveHandler = (e: any) => {
-    e.target.style.boxShadow = 'none';
-    e.target.style.border = '2px solid lightpink';
+    if (e.target.className === 'item') {
+      e.target.style.boxShadow = 'none';
+      e.target.style.border = '2px solid lightpink';
+    } else if (e.target.className === 'board') {
+      e.target.style.border = '5px solid lightgray';
+    }
   };
 
   const onDragStartHandler = (e: any, board: any, item: any) => {
     setCurrentBoard(board);
     setCurrentItem(item);
-    console.log('debug > onDragStartHandler===', item);
   };
 
-  const onDragEndHandler = (e: any, board: any, item: any) => {
+  const onDragEndHandler = (e: any) => {
     e.target.style.boxShadow = 'none';
-    console.log('debug > onDragEndHandler ===', item);
+    e.target.style.border = '2px solid lightpink';
   };
 
   const onDropHandler = (e: any, board: any, item: any) => {
-    console.log('debug > onDropHandler===', item);
-
     e.preventDefault();
     e.stopPropagation();
     if (currentBoard && currentItem) {
@@ -84,6 +85,8 @@ export const DragList = () => {
           return b;
         })
       );
+      e.target.style.boxShadow = 'none';
+      e.target.style.border = '2px solid lightpink';
     }
   };
 
@@ -106,6 +109,7 @@ export const DragList = () => {
           return b;
         })
       );
+      e.target.style.border = '5px solid lightgray';
     }
   };
 
@@ -113,19 +117,22 @@ export const DragList = () => {
     <div className="wrapp">
       {boards.map(board => (
         <div
+          key={board.id}
           className="board"
-          onDragOver={e => onDragOverHandler(e, null, null)}
+          onDragOver={e => onDragOverHandler(e, board)}
           onDrop={e => onDropBoardHandler(e, board)}
+          onDragLeave={e => onDragLeaveHandler(e)}
         >
           <div className="board_title">{board.title}</div>
           {board.items.map(item => (
             <div
+              key={item.id}
               className="item"
               draggable="true"
-              onDragOver={e => onDragOverHandler(e, board, item)}
+              onDragOver={e => onDragOverHandler(e, null)}
               onDragLeave={e => onDragLeaveHandler(e)}
               onDragStart={e => onDragStartHandler(e, board, item)}
-              onDragEnd={e => onDragEndHandler(e, board, item)}
+              onDragEnd={e => onDragEndHandler(e)}
               onDrop={e => onDropHandler(e, board, item)}
             >
               {item.id} {item.title}

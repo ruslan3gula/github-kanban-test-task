@@ -19,6 +19,7 @@
 }
 
 .item {
+  transition: all 500ms;
   width: 100%;
   border: 2px solid lightpink;
   padding: 10px 10px;
