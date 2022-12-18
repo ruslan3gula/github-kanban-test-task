@@ -5,10 +5,17 @@
   justify-content: center;
   align-items: center;
   border: 10px solid red;
+  flex-direction: column;
+  flex: 2 1 auto;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
 }
 .board {
   min-width: 300px;
-  min-height: 400px;
+  min-height: 300px;
   border: 5px solid lightgray;
   padding: 20px 10px;
   border-radius: 12px;
