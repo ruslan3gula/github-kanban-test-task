@@ -3,12 +3,21 @@ import { observer } from "mobx-react";
 import { toJS } from "mobx";
 import "./DragList.css";
 import { IssueStore, IssueStoreInstance } from "./IssueStore";
+import {
+  Services,
+  updateLocalStorage,
+  getLocalStorage,
+  checkRepoInLocalStorage,
+} from "../components/services";
 
 interface DragList {
   issueStore: IssueStoreInstance;
 }
 
+const services = Services;
+
 export const DragList: FC<DragList> = observer(({ issueStore }) => {
+  console.log("issueStore", toJS(issueStore.issues));
   const [currentBoard, setCurrentBoard] = useState<{
     id: number;
     title: string;
@@ -30,16 +39,21 @@ export const DragList: FC<DragList> = observer(({ issueStore }) => {
     setSearchUrl(e.target.value);
   };
 
-  function updateLocalStorage(updatedValue: any) {
-    console.log("updatedValue", updatedValue);
+  function handleLocalStorage(updatedValue: any) {
+    if (getLocalStorage(IssueStore.issues.user)) {
+      const prevData = JSON.parse(getLocalStorage(IssueStore.issues.user)!);
+      // console.log("prevData", toJS(prevData));
+      const result = prevData.map((item: any) => {
+        // console.log("item.repo", item.repo);
 
-    if (localStorage.getItem(JSON.stringify(issueStore.issues.repo))) {
-      localStorage.setItem(
-        JSON.stringify(issueStore.issues.repo),
-        JSON.stringify(updatedValue)
-      );
-    } else {
-      console.log(issueStore.issues.repo);
+        if (item.repo === issueStore.issues.repo) {
+          return { ...item, data: updatedValue };
+        }
+        return item;
+      });
+      // console.log("result", result);
+
+      updateLocalStorage(issueStore.issues.user, result);
     }
   }
 
@@ -95,6 +109,7 @@ export const DragList: FC<DragList> = observer(({ issueStore }) => {
         }
         return b;
       });
+      handleLocalStorage(issueStore.issues.data);
     }
   };
   const onDropBoardHandler = (e: any, board: any) => {
@@ -115,9 +130,9 @@ export const DragList: FC<DragList> = observer(({ issueStore }) => {
         }
         return item;
       });
-      updateLocalStorage(issueStore.issues.data);
+      handleLocalStorage(issueStore.issues.data);
 
-      // console.log("onDropBoardHandler", toJS(result));
+      // console.log("onDropBoardHandler", issueStore.issues.data);
     }
   };
 
@@ -159,5 +174,3 @@ export const DragList: FC<DragList> = observer(({ issueStore }) => {
     </div>
   );
 });
-
-interface TIssues {}

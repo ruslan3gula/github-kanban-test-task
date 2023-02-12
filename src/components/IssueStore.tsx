@@ -6,12 +6,18 @@ import {
   toJS,
 } from "mobx";
 
-import { Services } from "./services";
+import {
+  Services,
+  getLocalStorage,
+  updateLocalStorage,
+  sortByLocalStorage,
+  filterIssues,
+} from "./services";
 
 type TIssues = {
   user: string;
   repo: string;
-  data: [];
+  data: any[];
 };
 
 export class IssueStoreInstance {
@@ -19,7 +25,7 @@ export class IssueStoreInstance {
 
   service;
   constructor() {
-    makeAutoObservable(this, { issues: observable, getIssue: action });
+    makeAutoObservable(this);
     this.service = new Services();
   }
 
@@ -30,38 +36,43 @@ export class IssueStoreInstance {
       const [uri, user, repo] = this.service.processSearchUrl(value);
       const processedUrl: string = uri;
       const data = await this.service.get(processedUrl);
+      // console.log(data);
+      // const filteredData = data.pop();
+      // const sortedData = [{ data: filteredData, user, repo }];
+      // console.log("sortedData", sortedData);
+
       runInAction(() => {
-        this.issues = this.filterIssues(data, user, repo);
+        this.issues = filterIssues(data, user, repo);
         // console.log(toJS(this.issues));
       });
     } catch (e) {}
   };
 
-  filterIssues = (data: TIssues, user: string, repo: string) => {
-    const result: any = [
-      { id: 1, title: "OPEN", items: data },
-      { id: 2, title: "IN PROGRESS", items: [] },
-      {
-        id: 3,
-        title: "DONE",
-        items: [],
-      },
-    ];
+  // filterIssues = (data: TIssues, user: string, repo: string) => {
+  //   const result: any = [
+  //     { id: 1, title: "OPEN", items: data },
+  //     { id: 2, title: "IN PROGRESS", items: [] },
+  //     {
+  //       id: 3,
+  //       title: "DONE",
+  //       items: [],
+  //     },
+  //   ];
 
-    const prevUser = localStorage.getItem(repo)
-      ? console.log("Тут треба робити сортування")
-      : localStorage.setItem(JSON.stringify(repo), JSON.stringify(result));
-    // console.log("prevUser", prevUser);
-    // prevUser.map((item: any) => {
-    //   if (item.repo === repo) {
-    //     return item;
-    //   }
+  //   return { user, repo, data: result };
 
-    //   return { ...item };
-    // });
-
-    return { user, repo, data: result };
-  };
+  //   // console.log(getLocalStorage(user), getLocalStorage(repo));
+  //   // if (getLocalStorage(user) && getLocalStorage(repo)) {
+  //   //   // console.log("Тут треба робити сортування");
+  //   //   // this.sortByLocalStorage(user, repo, data);
+  //   //   // const listOfIds;
+  //   //   sortByLocalStorage(user, repo, data);
+  //   //   return { user, repo, data: result };
+  //   // } else {
+  //   //   updateLocalStorage(user, [{ repo, data: result }]);
+  //   //   return { user, repo, data: result };
+  //   // }
+  // };
 }
 
 export const IssueStore = new IssueStoreInstance();
